@@ -18,10 +18,23 @@ def dashboard(request):
         )
         deprec = depreciacion_linea_recta(alt.inversion_inicial, alt.valor_salvamento, alt.vida_util_anios) if alt.inversion_inicial > 0 else []
 
+        # NUEVO CÓDIGO: Generar el flujo de efectivo dinámicamente
+        flujo_caja = []
+        for anio in range(alt.vida_util_anios + 1):
+            if anio == 0:
+                monto = -alt.inversion_inicial # Desembolso inicial
+            elif anio == alt.vida_util_anios:
+                monto = -alt.costo_operativo_anual + alt.valor_salvamento # Último año + rescate
+            else:
+                monto = -alt.costo_operativo_anual # Años de operación normal
+            
+            flujo_caja.append({'anio': anio, 'monto': monto})
+
         item = {
             'objeto': alt,
             'caue': caue,
             'depreciacion': deprec,
+            'flujo_caja': flujo_caja, # <-- Agregamos el flujo al diccionario
             'evidencias': alt.evidencias.all()
         }
         resultados.append(item)

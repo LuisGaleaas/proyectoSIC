@@ -1,72 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>4Seasons - Apoyo a la Decisión de Inversión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light p-4">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light p-4">
     <div class="container">
-        <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 text-dark">4Seasons - Evaluación Económica de Envíos</h1>
-                <p class="text-muted mb-0">Proyecto Integrador UES-FMO: Sistemas Contables e Ingeniería Económica</p>
-            </div>
-            <a href="/admin/" class="btn btn-outline-secondary btn-sm">Panel Admin</a>
-        </header>
-
-        {% if mejor_opcion %}
-        <div class="alert alert-success shadow-sm mb-4">
-            <h4 class="alert-heading">Recomendación del Sistema:</h4>
-            <p class="mb-0">Según el análisis de <strong>Costo Anual Uniforme Equivalente (CAUE)</strong>, la opción más viable económicamente es: <strong>{{ mejor_opcion }}</strong>.</p>
+      <header
+        class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center"
+      >
+        <div>
+          <h1 class="h3 text-dark">
+            4Seasons - Evaluación Económica de Envíos
+          </h1>
+          <p class="text-muted mb-0">
+            Proyecto Integrador UES-FMO: Sistemas Contables e Ingeniería
+            Económica
+          </p>
         </div>
-        {% endif %}
+        <a href="/admin/" class="btn btn-outline-secondary btn-sm"
+          >Panel Admin</a
+        >
+      </header>
 
-        <div class="row">
-            {% for res in resultados %}
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="card-title mb-0">{{ res.objeto.nombre }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>{{ res.objeto.descripcion }}</p>
-                        <ul class="list-group list-group-flush mb-3">
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Inversión Inicial:</span>
-                                <strong>${{ res.objeto.inversion_inicial }}</strong>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Costo Operativo Anual:</span>
-                                <strong>${{ res.objeto.costo_operativo_anual }}</strong>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Vida Útil:</span>
-                                <span>{{ res.objeto.vida_util_anios }} años</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between bg-warning-subtle">
-                                <span><strong>CAUE (Costo Anual Equivalente):</strong></span>
-                                <strong class="text-danger">${{ res.caue }}</strong>
-                            </li>
-                        </ul>
+      {% if mejor_opcion %}
+      <div class="alert alert-success shadow-sm mb-4">
+        <h4 class="alert-heading">Recomendación del Sistema:</h4>
+        <p class="mb-0">
+          Según el análisis de
+          <strong>Costo Anual Uniforme Equivalente (CAUE)</strong>, la opción
+          más viable económicamente es: <strong>{{ mejor_opcion }}</strong>.
+        </p>
+      </div>
+      {% endif %}
 
-                        <h6>Trazabilidad y Evidencias:</h6>
-                        <ul class="small">
-                            {% for ev in res.evidencias %}
-                                <li><a href="{{ ev.archivo.url }}" target="_blank">{{ ev.tipo }}: {{ ev.descripcion }}</a></li>
-                            {% empty %}
-                                <li class="text-muted">Sin archivos adjuntos aún.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
+      <div class="row">
+        {% for res in resultados %}
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-dark text-white">
+              <h5 class="card-title mb-0">{{ res.objeto.nombre }}</h5>
             </div>
-            {% empty %}
-            <div class="col-12">
-                <p class="alert alert-info">Aún no hay alternativas registradas. Agrégalas desde el panel de administración.</p>
+            <div class="card-body">
+              <p>{{ res.objeto.descripcion }}</p>
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Inversión Inicial:</span>
+                  <strong>${{ res.objeto.inversion_inicial }}</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Costo Operativo Anual:</span>
+                  <strong>${{ res.objeto.costo_operativo_anual }}</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Vida Útil:</span>
+                  <span>{{ res.objeto.vida_util_anios }} años</span>
+                </li>
+                <li
+                  class="list-group-item d-flex justify-content-between bg-warning-subtle"
+                >
+                  <span><strong>CAUE (Costo Anual Equivalente):</strong></span>
+                  <strong class="text-danger">${{ res.caue }}</strong>
+                </li>
+              </ul>
+              <h6>Flujo de Efectivo:</h6>
+              <table class="table table-sm table-bordered text-center mb-3">
+                <thead class="table-light">
+                  <tr>
+                    <th>Año</th>
+                    <th>Monto ($)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for flujo in res.flujo_caja %}
+                  <tr>
+                    <td>{{ flujo.anio }}</td>
+                    <td
+                      class="{% if flujo.monto < 0 %}text-danger{% else %}text-success{% endif %}"
+                    >
+                      {{ flujo.monto }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <h6>Trazabilidad y Evidencias:</h6>
+              <ul class="small">
+                {% for ev in res.evidencias %}
+                <li>
+                  <a href="{{ ev.archivo.url }}" target="_blank"
+                    >{{ ev.tipo }}: {{ ev.descripcion }}</a
+                  >
+                </li>
+                {% empty %}
+                <li class="text-muted">Sin archivos adjuntos aún.</li>
+                {% endfor %}
+              </ul>
             </div>
-            {% endfor %}
+          </div>
         </div>
+        {% empty %}
+        <div class="col-12">
+          <p class="alert alert-info">
+            Aún no hay alternativas registradas. Agrégalas desde el panel de
+            administración.
+          </p>
+        </div>
+        {% endfor %}
+      </div>
     </div>
-</body>
+  </body>
 </html>
