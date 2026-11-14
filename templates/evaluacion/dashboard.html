@@ -1,3 +1,4 @@
+{% load l10n %}
 <!doctype html>
 <html lang="es">
   <head>
@@ -9,36 +10,27 @@
     />
     <style>
       .min-vw-10 {
-        min-width: 110px;
+        min-width: 115px;
       }
     </style>
   </head>
   <body class="bg-light p-4">
     <div class="container">
-      <header
-        class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center"
-      >
+      <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
         <div>
-          <h1 class="h3 text-dark">
-            4Seasons - Evaluación Económica de Envíos
-          </h1>
+          <h1 class="h3 text-dark">4Seasons - Evaluación Económica de Envíos</h1>
           <p class="text-muted mb-0">
-            Proyecto Integrador UES-FMO: Sistemas Contables e Ingeniería
-            Económica
+            Proyecto Integrador UES-FMO: Sistemas Contables e Ingeniería Económica
           </p>
         </div>
-        <a href="/admin/" class="btn btn-outline-secondary btn-sm"
-          >Panel Admin</a
-        >
+        <a href="/admin/" class="btn btn-outline-secondary btn-sm">Panel Admin</a>
       </header>
 
       {% if mejor_opcion %}
       <div class="alert alert-success shadow-sm mb-4">
         <h4 class="alert-heading">Recomendación del Sistema:</h4>
         <p class="mb-0">
-          Según el análisis de
-          <strong>Costo Anual Uniforme Equivalente (CAUE)</strong>, la opción
-          más viable económicamente es: <strong>{{ mejor_opcion }}</strong>.
+          Según el análisis de <strong>Costo Anual Uniforme Equivalente (CAUE)</strong>, la opción más viable económicamente es: <strong>{{ mejor_opcion }}</strong>.
         </p>
       </div>
       {% endif %}
@@ -53,82 +45,96 @@
             <div class="card-body">
               <p class="text-muted">{{ res.objeto.descripcion }}</p>
 
-              <!-- Formulario de Variables Interactivas (Simulador Sin Guardar) -->
+              <!-- Simulador de Variables en Tiempo Real (Blindado contra negativos) -->
               <div class="bg-light p-3 rounded border mb-3">
-                <h6 class="fw-bold mb-2">
-                  Simulador de Variables (Tiempo Real):
-                </h6>
+                <h6 class="fw-bold mb-2">Simulador de Variables (Tiempo Real):</h6>
 
-                <div class="mb-2">
-                  <label class="form-label small mb-1 fw-semibold"
-                    >Inversión Inicial ($):</label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    class="form-control form-control-sm calc-trigger"
-                    id="inv-{{ res.objeto.id }}"
-                    value="{{ res.objeto.inversion_inicial }}"
-                    data-id="{{ res.objeto.id }}"
-                  />
+                <div class="row g-2">
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small mb-1 fw-semibold">Inversión ($):</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="form-control form-control-sm calc-trigger"
+                      id="inv-{{ res.objeto.id }}"
+                      value="{{ res.objeto.inversion_inicial|unlocalize }}"
+                      data-id="{{ res.objeto.id }}"
+                    />
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small mb-1 fw-semibold">Ingreso/Ahorro ($):</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="form-control form-control-sm calc-trigger"
+                      id="ing-{{ res.objeto.id }}"
+                      value="{{ res.objeto.ingreso_anual|unlocalize }}"
+                      data-id="{{ res.objeto.id }}"
+                    />
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small mb-1 fw-semibold">Costo Anual ($):</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="form-control form-control-sm calc-trigger"
+                      id="costo-{{ res.objeto.id }}"
+                      value="{{ res.objeto.costo_operativo_anual|unlocalize }}"
+                      data-id="{{ res.objeto.id }}"
+                    />
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label small mb-1 fw-semibold">Vida (Años):</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="50"
+                      class="form-control form-control-sm calc-trigger"
+                      id="vida-{{ res.objeto.id }}"
+                      value="{{ res.objeto.vida_util_anios }}"
+                      data-id="{{ res.objeto.id }}"
+                    />
+                  </div>
                 </div>
 
-                <div class="mb-2">
-                  <label class="form-label small mb-1 fw-semibold"
-                    >Costo Operativo Anual ($):</label
-                  >
-                  <input
-                    type="number"
-                    step="0.01"
-                    class="form-control form-control-sm calc-trigger"
-                    id="costo-{{ res.objeto.id }}"
-                    value="{{ res.objeto.costo_operativo_anual }}"
-                    data-id="{{ res.objeto.id }}"
-                  />
-                </div>
-
-                <div class="mb-2">
-                  <label class="form-label small mb-1 fw-semibold"
-                    >Vida Útil (Años):</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control form-control-sm calc-trigger"
-                    id="vida-{{ res.objeto.id }}"
-                    value="{{ res.objeto.vida_util_anios }}"
-                    data-id="{{ res.objeto.id }}"
-                  />
-                </div>
-
-                <!-- Campos ocultos necesarios para la fórmula en JS -->
-                <input
-                  type="hidden"
-                  id="tmar-{{ res.objeto.id }}"
-                  value="{{ res.objeto.tasa_tmar }}"
-                />
-                <input
-                  type="hidden"
-                  id="salv-{{ res.objeto.id }}"
-                  value="{{ res.objeto.valor_salvamento }}"
-                />
+                <!-- Campos ocultos para cálculo dinámico en JS -->
+                <input type="hidden" id="tmar-{{ res.objeto.id }}" value="{{ res.objeto.tasa_tmar|unlocalize }}" />
+                <input type="hidden" id="salv-{{ res.objeto.id }}" value="{{ res.objeto.valor_salvamento|unlocalize }}" />
               </div>
 
-              <!-- Indicador CAUE Recalculado -->
-              <div
-                class="p-2 mb-3 bg-warning-subtle rounded border d-flex justify-content-between align-items-center"
-              >
-                <span><strong>CAUE (Costo Anual Equivalente):</strong></span>
-                <strong class="text-danger fs-5"
-                  >$<span id="caue-val-{{ res.objeto.id }}"
-                    >{{ res.caue }}</span
-                  ></strong
-                >
+              <!-- Los 4 Indicadores Financieros Obligatorios -->
+              <div class="row g-2 mb-3 text-center">
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-warning-subtle rounded border">
+                    <small class="d-block text-muted fw-bold">CAUE</small>
+                    <strong class="text-danger">$<span id="caue-val-{{ res.objeto.id }}">{{ res.caue|unlocalize }}</span></strong>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-primary-subtle rounded border">
+                    <small class="d-block text-muted fw-bold">VPN (FEDI)</small>
+                    <strong class="text-primary">$<span id="vpn-val-{{ res.objeto.id }}">{{ res.vpn|unlocalize }}</span></strong>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-info-subtle rounded border">
+                    <small class="d-block text-muted fw-bold">TIR</small>
+                    <strong class="text-dark">{{ res.tir }}{% if res.tir != "N/A" %}%{% endif %}</strong>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-success-subtle rounded border">
+                    <small class="d-block text-muted fw-bold">Relación B/C</small>
+                    <strong class="text-success"><span id="bc-val-{{ res.objeto.id }}">{{ res.bc|unlocalize }}</span></strong>
+                  </div>
+                </div>
               </div>
 
-              <!-- Línea de Tiempo del Flujo de Efectivo -->
-              <h6 class="fw-bold mt-3">
-                Línea de Tiempo del Flujo de Efectivo:
-              </h6>
+              <!-- Diagrama de Flujo de Efectivo (Línea de Tiempo con 3 estados: Salida, Neutro, Entrada) -->
+              <h6 class="fw-bold mt-3">Diagrama de Flujo de Efectivo (Años):</h6>
               <div
                 class="d-flex justify-content-between align-items-center bg-white p-3 rounded border mb-3 overflow-auto"
                 id="timeline-container-{{ res.objeto.id }}"
@@ -137,74 +143,180 @@
                 <div class="text-center px-2 min-vw-10">
                   {% if flujo.monto < 0 %}
                   <span class="badge bg-danger mb-1">▼ Salida</span>
-                  <div class="fw-bold text-danger fs-6">
-                    -${{ flujo.monto|stringformat:".2f"|slice:"1:" }}
-                  </div>
+                  <div class="fw-bold text-danger fs-6">-${{ flujo.monto|stringformat:".2f"|slice:"1:" }}</div>
+                  {% elif flujo.monto > 0 %}
+                  <span class="badge bg-success mb-1">▲ Entrada</span>
+                  <div class="fw-bold text-success fs-6">+${{ flujo.monto|stringformat:".2f" }}</div>
                   {% else %}
-                  <span class="badge bg-success mb-1">▲ Entrada / Rescate</span>
-                  <div class="fw-bold text-success fs-6">
-                    +${{ flujo.monto|stringformat:".2f" }}
-                  </div>
+                  <span class="badge bg-secondary mb-1">● Neutro</span>
+                  <div class="fw-bold text-secondary fs-6">$0.00</div>
                   {% endif %}
 
                   <div class="py-1">
                     <span
                       class="rounded-circle d-inline-block bg-secondary text-white fw-bold"
-                      style="
-                        width: 28px;
-                        height: 28px;
-                        line-height: 28px;
-                        font-size: 12px;
-                      "
-                    >
-                      {{ flujo.anio }}
-                    </span>
+                      style="width: 28px; height: 28px; line-height: 28px; font-size: 12px;"
+                    >{{ flujo.anio }}</span>
                   </div>
 
                   <small class="text-muted d-block" style="font-size: 11px">
-                    {% if flujo.anio == 0 %} Inversión Inicial {% elif
-                    flujo.anio == res.objeto.vida_util_anios %} Op. Anual +
-                    Salvamento {% else %} Costo Operativo {% endif %}
+                    {% if flujo.anio == 0 %}Inversión Inicial{% elif flujo.anio == res.objeto.vida_util_anios %}Flujo + Rescate{% else %}Flujo Neto Anual{% endif %}
                   </small>
                 </div>
                 {% if not forloop.last %}
-                <div
-                  class="border-top flex-grow-1 mx-1 border-2 border-secondary-subtle"
-                ></div>
-                {% endif %} {% endfor %}
+                <div class="border-top flex-grow-1 mx-1 border-2 border-secondary-subtle"></div>
+                {% endif %}
+                {% endfor %}
               </div>
+
+              <!-- Tablas de Depreciación (2 Métodos Exigidos) -->
+              {% if res.depreciacion %}
+              <div class="mb-3">
+                <h6 class="fw-bold small text-uppercase text-secondary">
+                  Plan de Depreciación (Línea Recta vs. Suma de Dígitos)
+                </h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered table-striped small text-center mb-0">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>Año</th>
+                        <th>Cuota L. Recta</th>
+                        <th>Saldo L. Recta</th>
+                        <th>Cuota Suma Dígitos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for fila in res.depreciacion %}
+                      <tr>
+                        <td>{{ fila.anio }}</td>
+                        <td>${{ fila.cuota|unlocalize }}</td>
+                        <td>${{ fila.saldo|unlocalize }}</td>
+                        <td>
+                          {% for sda in res.depreciacion_sda %}
+                            {% if sda.anio == fila.anio %}${{ sda.cuota|unlocalize }}{% endif %}
+                          {% endfor %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {% endif %}
 
               <!-- Trazabilidad de Evidencias Documentales -->
               <h6 class="fw-bold">Trazabilidad y Evidencias:</h6>
-              <ul class="small mb-0">
+              <ul class="small mb-3">
                 {% for ev in res.evidencias %}
                 <li>
-                  <a href="{{ ev.archivo.url }}" target="_blank"
-                    >{{ ev.tipo }}: {{ ev.descripcion }}</a
-                  >
+                  <a href="{{ ev.archivo.url }}" target="_blank">{{ ev.tipo }}: {{ ev.descripcion }}</a>
                 </li>
                 {% empty %}
                 <li class="text-muted">Sin archivos adjuntos aún.</li>
                 {% endfor %}
               </ul>
+
+              <!-- Botón para Desglosar Toda la Auditoría y Justificación -->
+              <div class="d-grid mt-auto">
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm fw-semibold"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalDetalle-{{ res.objeto.id }}"
+                >
+                  🔍 Desglosar Justificación, Proveedores y Evidencias
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ventana Emergente (Modal) con el Desglose Completo del Admin -->
+          <div class="modal fade" id="modalDetalle-{{ res.objeto.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title">Ficha Técnica y Auditoría: {{ res.objeto.nombre }}</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <h6 class="fw-bold text-primary border-bottom pb-1">1. Parámetros Oficiales Registrados</h6>
+                  <div class="row g-2 mb-3 small">
+                    <div class="col-6 col-md-4"><strong>Inversión Inicial:</strong> ${{ res.objeto.inversion_inicial }}</div>
+                    <div class="col-6 col-md-4"><strong>Ingreso / Ahorro Anual:</strong> ${{ res.objeto.ingreso_anual }}</div>
+                    <div class="col-6 col-md-4"><strong>Costo Operativo Anual:</strong> ${{ res.objeto.costo_operativo_anual }}</div>
+                    <div class="col-6 col-md-4"><strong>Valor de Salvamento:</strong> ${{ res.objeto.valor_salvamento }}</div>
+                    <div class="col-6 col-md-4"><strong>Vida Útil:</strong> {{ res.objeto.vida_util_anios }} años</div>
+                    <div class="col-6 col-md-4"><strong>TMAR Aplicada:</strong> {{ res.objeto.tasa_tmar }}%</div>
+                  </div>
+
+                  <h6 class="fw-bold text-primary border-bottom pb-1">2. Justificación Operativa y Proveedores</h6>
+                  <p class="small mb-2">
+                    <strong>¿Por qué se evaluó esta alternativa?</strong><br>
+                    {{ res.objeto.justificacion_seleccion|default:"Sin descripción registrada en el Panel Admin."|linebreaksbr }}
+                  </p>
+                  <p class="small mb-2">
+                    <strong>Dónde se cotizó / compró el activo (Inversión Inicial):</strong><br>
+                    {{ res.objeto.detalle_inversion|default:"No aplica o sin detalle registrado en el Panel Admin."|linebreaksbr }}
+                  </p>
+                  <p class="small mb-3">
+                    <strong>Desglose de Costos Operativos, Mantenimiento y Seguro:</strong><br>
+                    {{ res.objeto.detalle_costos_operativos|default:"Sin detalle operativo registrado en el Panel Admin."|linebreaksbr }}
+                  </p>
+
+                  <h6 class="fw-bold text-primary border-bottom pb-1">3. Fuentes de Verificación y Evidencias Documentales</h6>
+                  <p class="small mb-2">
+                    <strong>Respaldo Contable / Entrevistas:</strong><br>
+                    {{ res.objeto.fuentes_verificacion|default:"Sin fuentes citadas aún."|linebreaksbr }}
+                  </p>
+                  <div class="list-group small">
+                    {% for ev in res.evidencias %}
+                    <a href="{{ ev.archivo.url }}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                      <div>
+                        <span class="badge bg-secondary me-2">{{ ev.tipo }}</span>
+                        <strong>{{ ev.descripcion }}</strong>
+                      </div>
+                      <span class="btn btn-sm btn-primary">Abrir Archivo ↗</span>
+                    </a>
+                    {% empty %}
+                    <div class="alert alert-warning small mb-0">
+                      Aún no se han subido archivos adjuntos (cotizaciones, facturas o entrevistas) para esta alternativa desde el Panel Admin.
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <a href="/admin/evaluacion/alternativainversion/{{ res.objeto.id }}/change/" class="btn btn-outline-secondary btn-sm">
+                    ✏️ Editar información en Admin
+                  </a>
+                  <button type="button" class="btn btn-dark btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         {% empty %}
         <div class="col-12">
           <div class="alert alert-info">
-            Aún no hay alternativas registradas. Agrégalas desde el panel de
-            administración.
+            Aún no hay alternativas registradas. Agrégalas desde el panel de administración.
           </div>
         </div>
         {% endfor %}
       </div>
     </div>
 
-    <!-- Script para recálculo dinámico en tiempo real mediante JavaScript -->
+    <!-- Bootstrap JS Bundle (Necesario para abrir la ventana modal) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".calc-trigger").forEach((input) => {
+          // Bloquear tecla "-" directamente al escribir
+          input.addEventListener("keydown", function (e) {
+            if (e.key === "-" || e.key === "e" || e.key === "E") {
+              e.preventDefault();
+            }
+          });
+
           input.addEventListener("input", function () {
             const id = this.getAttribute("data-id");
             recalcularAlternativa(id);
@@ -212,31 +324,84 @@
         });
 
         function recalcularAlternativa(id) {
-          const P = parseFloat(document.getElementById(`inv-${id}`).value) || 0;
-          const A =
-            parseFloat(document.getElementById(`costo-${id}`).value) || 0;
-          const n = parseInt(document.getElementById(`vida-${id}`).value) || 1;
-          const VS =
-            parseFloat(document.getElementById(`salv-${id}`).value) || 0;
-          const i_pct =
-            parseFloat(document.getElementById(`tmar-${id}`).value) || 12;
-          const i = i_pct / 100;
+          const invInput = document.getElementById(`inv-${id}`);
+          const ingInput = document.getElementById(`ing-${id}`);
+          const costoInput = document.getElementById(`costo-${id}`);
+          const vidaInput = document.getElementById(`vida-${id}`);
 
-          // Recalcular CAUE (P*(A/P, i, n) + A - VS*(A/F, i, n))
-          let caue = 0;
-          if (i > 0 && n > 0) {
-            const factorAP =
-              (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
-            const factorAF = i / (Math.pow(1 + i, n) - 1);
-            caue = P * factorAP + A - VS * factorAF;
+          // Validar y forzar valores >= 0 (o >= 1 para vida útil)
+          let P = parseFloat(invInput.value);
+          if (isNaN(P) || P < 0) {
+            P = 0;
+            if (invInput.value !== "") invInput.value = 0;
           }
 
+          let Ing = parseFloat(ingInput.value);
+          if (isNaN(Ing) || Ing < 0) {
+            Ing = 0;
+            if (ingInput.value !== "") ingInput.value = 0;
+          }
+
+          let A = parseFloat(costoInput.value);
+          if (isNaN(A) || A < 0) {
+            A = 0;
+            if (costoInput.value !== "") costoInput.value = 0;
+          }
+
+          let n = parseInt(vidaInput.value);
+          if (isNaN(n) || n < 1) {
+            n = 1;
+            if (vidaInput.value !== "") vidaInput.value = 1;
+          }
+          if (n > 50) {
+            n = 50;
+            vidaInput.value = 50;
+          }
+
+          const VS = Math.max(0, parseFloat(document.getElementById(`salv-${id}`).value) || 0);
+          const i_pct = Math.max(0, parseFloat(document.getElementById(`tmar-${id}`).value) || 12);
+          const i = i_pct / 100;
+
+          // 1. Recalcular CAUE
+          let caue = 0;
+          if (i > 0) {
+            const potencia = Math.pow(1 + i, n);
+            const factorAP = (i * potencia) / (potencia - 1);
+            const factorAF = i / (potencia - 1);
+            caue = P * factorAP + A - VS * factorAF;
+          } else {
+            caue = (P - VS) / n + A;
+          }
           document.getElementById(`caue-val-${id}`).innerText = caue.toFixed(2);
 
-          // Reconstruir la Línea de Tiempo gráfica
-          const timelineContainer = document.getElementById(
-            `timeline-container-${id}`,
-          );
+          // 2. Recalcular VPN (FEDI con ISR 30%) y Relación B/C
+          const baseDep = Math.max(P - VS, 0);
+          const depAnual = P > 0 ? baseDep / n : 0;
+          let vpn = -P;
+
+          for (let t = 1; t <= n; t++) {
+            const uai = Ing - A - depAnual;
+            const impuesto = Math.max(0, uai * 0.30);
+            let fedi = (Ing - A) - impuesto;
+            if (t === n) fedi += VS;
+            vpn += fedi / Math.pow(1 + i, t);
+          }
+          if (Math.abs(vpn) < 0.005) vpn = 0;
+          document.getElementById(`vpn-val-${id}`).innerText = vpn.toFixed(2);
+
+          let bc = 0;
+          if (i > 0) {
+            const potencia = Math.pow(1 + i, n);
+            const factorPA = (potencia - 1) / (i * potencia);
+            const factorPF = 1 / potencia;
+            const vpBeneficios = (Ing * factorPA) + (VS * factorPF);
+            const vpCostos = P + (A * factorPA);
+            bc = vpCostos > 0 ? vpBeneficios / vpCostos : 0;
+          }
+          document.getElementById(`bc-val-${id}`).innerText = bc.toFixed(2);
+
+          // 3. Reconstruir línea de tiempo con 3 estados: Salida (<0), Neutro (==0), Entrada (>0)
+          const timelineContainer = document.getElementById(`timeline-container-${id}`);
           timelineContainer.innerHTML = "";
 
           for (let anio = 0; anio <= n; anio++) {
@@ -247,41 +412,48 @@
               monto = -P;
               etiqueta = "Inversión Inicial";
             } else if (anio === n) {
-              monto = -A + VS;
-              etiqueta = "Op. Anual + Salvamento";
+              monto = Ing - A + VS;
+              etiqueta = "Flujo + Rescate";
             } else {
-              monto = -A;
-              etiqueta = "Costo Operativo";
+              monto = Ing - A;
+              etiqueta = "Flujo Neto Anual";
+            }
+
+            if (Math.abs(monto) < 0.005) monto = 0;
+
+            let badgeText = "● Neutro";
+            let badgeClass = "bg-secondary";
+            let textClass = "text-secondary";
+            let montoTexto = "$0.00";
+
+            if (monto < 0) {
+              badgeText = "▼ Salida";
+              badgeClass = "bg-danger";
+              textClass = "text-danger";
+              montoTexto = `-$${Math.abs(monto).toFixed(2)}`;
+            } else if (monto > 0) {
+              badgeText = "▲ Entrada";
+              badgeClass = "bg-success";
+              textClass = "text-success";
+              montoTexto = `+$${monto.toFixed(2)}`;
             }
 
             const itemDiv = document.createElement("div");
             itemDiv.className = "text-center px-2 min-vw-10";
-
-            const esSalida = monto < 0;
-            const badgeText = esSalida ? "▼ Salida" : "▲ Entrada / Rescate";
-            const badgeClass = esSalida ? "bg-danger" : "bg-success";
-            const textClass = esSalida ? "text-danger" : "text-success";
-            const montoTexto = esSalida
-              ? `-$${Math.abs(monto).toFixed(2)}`
-              : `+$${monto.toFixed(2)}`;
-
             itemDiv.innerHTML = `
-                    <span class="badge ${badgeClass} mb-1">${badgeText}</span>
-                    <div class="fw-bold ${textClass} fs-6">${montoTexto}</div>
-                    <div class="py-1">
-                        <span class="rounded-circle d-inline-block bg-secondary text-white fw-bold" style="width: 28px; height: 28px; line-height: 28px; font-size: 12px;">
-                            ${anio}
-                        </span>
-                    </div>
-                    <small class="text-muted d-block" style="font-size: 11px;">${etiqueta}</small>
-                `;
+              <span class="badge ${badgeClass} mb-1">${badgeText}</span>
+              <div class="fw-bold ${textClass} fs-6">${montoTexto}</div>
+              <div class="py-1">
+                <span class="rounded-circle d-inline-block bg-secondary text-white fw-bold" style="width: 28px; height: 28px; line-height: 28px; font-size: 12px;">${anio}</span>
+              </div>
+              <small class="text-muted d-block" style="font-size: 11px;">${etiqueta}</small>
+            `;
 
             timelineContainer.appendChild(itemDiv);
 
             if (anio < n) {
               const lineDiv = document.createElement("div");
-              lineDiv.className =
-                "border-top flex-grow-1 mx-1 border-2 border-secondary-subtle";
+              lineDiv.className = "border-top flex-grow-1 mx-1 border-2 border-secondary-subtle";
               timelineContainer.appendChild(lineDiv);
             }
           }

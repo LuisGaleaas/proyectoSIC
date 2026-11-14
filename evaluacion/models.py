@@ -22,7 +22,7 @@ class Empresa(models.Model):
 
 class AlternativaInversion(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='alternativas')
-    nombre = models.CharField(max_length=150)  # Ej: Moto propia, Tercerizado C807, Bicicleta
+    nombre = models.CharField(max_length=150)  # Ej: Moto propia, Tercerizado C807
     descripcion = models.TextField()
     
     # Parámetros financieros base
@@ -59,6 +59,28 @@ class AlternativaInversion(models.Model):
         ]
     )
 
+    # Campos de Auditoría, Proveedores y Trazabilidad (Editables desde Admin)
+    justificacion_seleccion = models.TextField(
+        blank=True,
+        verbose_name="¿Por qué se evaluó esta alternativa?",
+        help_text="Explica la necesidad operativa en 4Seasons y el criterio de selección."
+    )
+    detalle_inversion = models.TextField(
+        blank=True,
+        verbose_name="Desglose y Proveedor de Inversión Inicial",
+        help_text="Ej: Concesionario donde se cotizó la moto, modelo, placas y matrícula."
+    )
+    detalle_costos_operativos = models.TextField(
+        blank=True,
+        verbose_name="Desglose de Costos Operativos y Seguros",
+        help_text="Ej: Aseguradora, talleres de mantenimiento, consumo de gasolina o tarifas de envíos."
+    )
+    fuentes_verificacion = models.TextField(
+        blank=True,
+        verbose_name="Fuentes de Verificación (Auditoría)",
+        help_text="Ej: Cotización #104, Entrevista con propietario (fecha), Registros contables."
+    )
+
     class Meta:
         verbose_name_plural = "Alternativas de Inversión"
 
@@ -70,7 +92,7 @@ class AlternativaInversion(models.Model):
             })
 
     def __str__(self):
-        return f"{self.nombre} - {self.empresa.nombre}"
+        return f"{self.nombre} ({self.empresa.nombre})"
 
 class EvidenciaDocumental(models.Model):
     TIPO_CHOICES = [
