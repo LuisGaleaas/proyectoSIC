@@ -9,6 +9,11 @@ from .calculos import (
     calcular_tir,
     calcular_beneficio_costo
 )
+def inicio(request):
+    empresa = Empresa.objects.first()
+    return render(request, 'evaluacion/inicio.html', {
+        'empresa': empresa
+    })
 
 def dashboard(request):
     alternativas = AlternativaInversion.objects.all()

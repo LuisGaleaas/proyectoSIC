@@ -2,11 +2,12 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from evaluacion.views import dashboard
+from evaluacion.views import inicio, dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', dashboard, name='dashboard'),
+    path('', inicio, name='inicio'),
+    path('dashboard/', dashboard, name='dashboard'),
 ]
 
 if settings.DEBUG:
