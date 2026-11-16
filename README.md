@@ -1,8 +1,11 @@
-👥 Equipo de Desarrollo (UES-FMO)
+  👥 Equipo de Desarrollo (UES-FMO)
 
 Luis Manuel Galeas Rosales -> GR23030
+
 Carlos Alejandro Barrientos Lapa -> BL23012
+
 Juan Anderson Granados Alvarez -> GA22021
+
 Empresa Caso de Estudio: 4Seasons (San Miguel, El Salvador)
 
 
