@@ -47,10 +47,7 @@ Ficha de Trazabilidad Documental (Modal): Ventana emergente por alternativa que 
 
 🛠️ Stack Tecnológico
 
-Backend: Python 3.x, Django 5.x
-
+Backend: Python 3.14.4, Django 6.1.2
 Base de Datos: SQLite3 (db.sqlite3)
-
 Frontend: HTML5, Bootstrap 5.3, JavaScript (ES6)
-
 Control de Versiones: Git & GitHub (flujo colaborativo en rama main)
