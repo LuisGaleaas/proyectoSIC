@@ -263,6 +263,38 @@
                     <strong>Desglose de Costos Operativos, Mantenimiento y Seguro:</strong><br>
                     {{ res.objeto.detalle_costos_operativos|default:"Sin detalle operativo registrado en el Panel Admin."|linebreaksbr }}
                   </p>
+                                    <table class="table table-sm small mb-3">
+                    <thead>
+                      <tr><th>Concepto</th><th class="text-end">Monto anual</th><th>Fuente</th></tr>
+                    </thead>
+                    <tbody>
+                      {% for c in res.objeto.costos.all %}
+                      <tr>
+                        <td>{{ c.concepto }}</td>
+                        <td class="text-end">${{ c.monto_anual }}</td>
+                        <td>
+                          {% if c.fuente_evidencia %}<a href="{{ c.fuente_evidencia.archivo.url }}" target="_blank">{{ c.fuente_evidencia.descripcion }}</a>{% endif %}
+                          {% if c.fuente_nota %}{{ c.fuente_nota }}{% endif %}
+                          {% if not c.fuente_evidencia and not c.fuente_nota %}<span class="text-danger">Sin fuente</span>{% endif %}
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr><td colspan="3" class="text-muted">Sin costos desglosados en el Panel Admin.</td></tr>
+                      {% endfor %}
+                    </tbody>
+                    {% if res.objeto.costos.exists %}
+                    <tfoot>
+                      <tr class="fw-bold">
+                        <td>Total desglosado</td>
+                        <td class="text-end">${{ res.objeto.total_costos_detallados }}</td>
+                        <td>
+                          {% if res.objeto.costos_cuadran %}<span class="text-success">✔ Coincide con el costo operativo anual</span>
+                          {% else %}<span class="text-danger">⚠ No coincide con el costo operativo anual (${{ res.objeto.costo_operativo_anual }})</span>{% endif %}
+                        </td>
+                      </tr>
+                    </tfoot>
+                    {% endif %}
+                  </table>
 
                   <h6 class="fw-bold text-primary border-bottom pb-1">3. Fuentes de Verificación y Evidencias Documentales</h6>
                   <p class="small mb-2">

@@ -90,6 +90,14 @@ class AlternativaInversion(models.Model):
             raise ValidationError({
                 'valor_salvamento': 'El valor de salvamento no puede superar la inversión inicial.'
             })
+        
+    @property
+    def total_costos_detallados(self):
+        return sum((c.monto_anual for c in self.costos.all()), 0)
+
+    @property
+    def costos_cuadran(self):
+        return self.total_costos_detallados == self.costo_operativo_anual
 
     def __str__(self):
         return f"{self.nombre} ({self.empresa.nombre})"
@@ -113,3 +121,28 @@ class EvidenciaDocumental(models.Model):
 
     def __str__(self):
         return f"{self.tipo}: {self.descripcion}"
+
+class CostoConcepto(models.Model):
+    """Desglose del costo operativo anual, cada rubro con su fuente."""
+    alternativa = models.ForeignKey(AlternativaInversion, on_delete=models.CASCADE, related_name='costos')
+    concepto = models.CharField(max_length=150, help_text="Ej: Gasolina, Seguro, Mantenimiento, Tarifa C807")
+    monto_anual = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        validators=[MinValueValidator(0.00, message="El monto no puede ser negativo.")]
+    )
+    fuente_evidencia = models.ForeignKey(
+        EvidenciaDocumental, null=True, blank=True, on_delete=models.SET_NULL,
+        verbose_name="Evidencia (archivo subido)"
+    )
+    fuente_nota = models.CharField(
+        max_length=255, blank=True,
+        verbose_name="Otra fuente",
+        help_text="Ej: Entrevista con el propietario, 12/11/2026"
+    )
+
+    class Meta:
+        verbose_name = "Costo por concepto"
+        verbose_name_plural = "Costos por concepto"
+
+    def __str__(self):
+        return f"{self.concepto}: {self.monto_anual}"
