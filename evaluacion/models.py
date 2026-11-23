@@ -99,6 +99,27 @@ class AlternativaInversion(models.Model):
     def costos_cuadran(self):
         return self.total_costos_detallados == self.costo_operativo_anual
 
+    @property
+    def fuentes_por_dato(self):
+        valores = {
+            'INVERSION': f"${self.inversion_inicial}",
+            'INGRESO': f"${self.ingreso_anual}",
+            'VIDA_UTIL': f"{self.vida_util_anios} años",
+            'TMAR': f"{self.tasa_tmar}%",
+        }
+        todas = [f for f in self.fuentes_datos.all() if f.fuente_evidencia_id or f.fuente_nota.strip()]
+        resultado = []
+        for clave, etiqueta in FuenteDato.DATO_CHOICES:
+            fuentes = [f for f in todas if f.dato == clave]
+            resultado.append({
+                'etiqueta': etiqueta,
+                'valor': valores[clave],
+                'fuentes': fuentes,
+                'cantidad': len(fuentes),
+                'completo': len(fuentes) >= 2,
+            })
+        return resultado
+
     def __str__(self):
         return f"{self.nombre} ({self.empresa.nombre})"
 
@@ -143,6 +164,7 @@ class CostoConcepto(models.Model):
     class Meta:
         verbose_name = "Costo por concepto"
         verbose_name_plural = "Costos por concepto"
+
     @property
     def num_fuentes(self):
         return (1 if self.fuente_evidencia else 0) + (1 if self.fuente_nota.strip() else 0)
@@ -153,3 +175,36 @@ class CostoConcepto(models.Model):
 
     def __str__(self):
         return f"{self.concepto}: {self.monto_anual}"
+
+
+class FuenteDato(models.Model):
+    """Una fuente que respalda un dato clave de la alternativa (inversión, ingreso, vida útil, TMAR)."""
+    DATO_CHOICES = [
+        ('INVERSION', 'Inversión inicial'),
+        ('INGRESO', 'Ingreso / ahorro anual'),
+        ('VIDA_UTIL', 'Vida útil'),
+        ('TMAR', 'Tasa de interés (TMAR)'),
+    ]
+    alternativa = models.ForeignKey(AlternativaInversion, on_delete=models.CASCADE, related_name='fuentes_datos')
+    dato = models.CharField(max_length=20, choices=DATO_CHOICES)
+    fuente_evidencia = models.ForeignKey(
+        EvidenciaDocumental, null=True, blank=True, on_delete=models.SET_NULL,
+        verbose_name="Evidencia (archivo subido)"
+    )
+    fuente_nota = models.CharField(
+        max_length=255, blank=True,
+        verbose_name="Otra fuente",
+        help_text="Ej: Entrevista con el propietario, 12/11/2026"
+    )
+
+    class Meta:
+        verbose_name = "Fuente de dato clave"
+        verbose_name_plural = "Fuentes de datos clave"
+
+    def clean(self):
+        super().clean()
+        if not self.fuente_evidencia_id and not self.fuente_nota.strip():
+            raise ValidationError("Elige una evidencia o escribe otra fuente.")
+
+    def __str__(self):
+        return f"{self.get_dato_display()}: {self.fuente_nota or self.fuente_evidencia}"

@@ -296,7 +296,29 @@
                     </tfoot>
                     {% endif %}
                   </table>
-
+                                    <h6 class="fw-bold text-primary border-bottom pb-1">Fuentes de los datos clave</h6>
+                  <table class="table table-sm small mb-3">
+                    <thead>
+                      <tr><th>Dato</th><th>Valor</th><th>Fuentes</th></tr>
+                    </thead>
+                    <tbody>
+                      {% for d in res.objeto.fuentes_por_dato %}
+                      <tr>
+                        <td>{{ d.etiqueta }}</td>
+                        <td>{{ d.valor }}</td>
+                        <td>
+                          {% for f in d.fuentes %}
+                          <div>
+                            {% if f.fuente_evidencia %}<a href="{{ f.fuente_evidencia.archivo.url }}" target="_blank">{{ f.fuente_evidencia.descripcion }}</a>{% endif %}
+                            {% if f.fuente_nota %}{{ f.fuente_nota }}{% endif %}
+                          </div>
+                          {% endfor %}
+                          {% if d.completo %}<span class="text-success d-block">✔ {{ d.cantidad }} de 2 fuentes</span>{% else %}<span class="text-danger d-block">⚠ {{ d.cantidad }} de 2 fuentes</span>{% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                   <h6 class="fw-bold text-primary border-bottom pb-1">3. Fuentes de Verificación y Evidencias Documentales</h6>
                   <p class="small mb-2">
                     <strong>Respaldo Contable / Entrevistas:</strong><br>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Empresa, AlternativaInversion, EvidenciaDocumental, CostoConcepto
+from .models import Empresa, AlternativaInversion, EvidenciaDocumental, CostoConcepto, FuenteDato
 
 
 class CostoConceptoInline(admin.TabularInline):
@@ -7,8 +7,13 @@ class CostoConceptoInline(admin.TabularInline):
     extra = 1
 
 
+class FuenteDatoInline(admin.TabularInline):
+    model = FuenteDato
+    extra = 1
+
+
 class AlternativaInversionAdmin(admin.ModelAdmin):
-    inlines = [CostoConceptoInline]
+    inlines = [CostoConceptoInline, FuenteDatoInline]
 
 
 admin.site.register(Empresa)
