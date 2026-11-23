@@ -104,6 +104,7 @@
                 <!-- Campos ocultos para cálculo dinámico en JS -->
                 <input type="hidden" id="tmar-{{ res.objeto.id }}" value="{{ res.objeto.tasa_tmar|unlocalize }}" />
                 <input type="hidden" id="salv-{{ res.objeto.id }}" value="{{ res.objeto.valor_salvamento|unlocalize }}" />
+                <input type="hidden" id="isr-{{ res.objeto.id }}" value="{{ empresa.tasa_impuesto|unlocalize }}" />
               </div>
 
               <!-- Los 4 Indicadores Financieros Obligatorios -->
@@ -417,6 +418,7 @@
           const VS = Math.max(0, parseFloat(document.getElementById(`salv-${id}`).value) || 0);
           const i_pct = Math.max(0, parseFloat(document.getElementById(`tmar-${id}`).value) || 12);
           const i = i_pct / 100;
+          const tasaISR = Math.max(0, parseFloat(document.getElementById(`isr-${id}`).value) || 30) / 100;
 
           // 1. Recalcular CAUE
           let caue = 0;
@@ -437,7 +439,7 @@
 
           for (let t = 1; t <= n; t++) {
             const uai = Ing - A - depAnual;
-            const impuesto = Math.max(0, uai * 0.30);
+            const impuesto = Math.max(0, uai * tasaISR);
             let fedi = (Ing - A) - impuesto;
             if (t === n) fedi += VS;
             vpn += fedi / Math.pow(1 + i, t);
