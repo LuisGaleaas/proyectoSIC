@@ -143,6 +143,13 @@ class CostoConcepto(models.Model):
     class Meta:
         verbose_name = "Costo por concepto"
         verbose_name_plural = "Costos por concepto"
+    @property
+    def num_fuentes(self):
+        return (1 if self.fuente_evidencia else 0) + (1 if self.fuente_nota.strip() else 0)
+
+    @property
+    def fuentes_completas(self):
+        return self.num_fuentes >= 2
 
     def __str__(self):
         return f"{self.concepto}: {self.monto_anual}"

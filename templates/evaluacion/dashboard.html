@@ -276,6 +276,7 @@
                           {% if c.fuente_evidencia %}<a href="{{ c.fuente_evidencia.archivo.url }}" target="_blank">{{ c.fuente_evidencia.descripcion }}</a>{% endif %}
                           {% if c.fuente_nota %}{{ c.fuente_nota }}{% endif %}
                           {% if not c.fuente_evidencia and not c.fuente_nota %}<span class="text-danger">Sin fuente</span>{% endif %}
+                          {% if c.fuentes_completas %}<span class="text-success d-block">✔ {{ c.num_fuentes }} de 2 fuentes</span>{% else %}<span class="text-danger d-block">⚠ {{ c.num_fuentes }} de 2 fuentes</span>{% endif %}
                         </td>
                       </tr>
                       {% empty %}
